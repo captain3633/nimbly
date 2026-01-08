@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Nimbly specific
+uploads/
+*.db
+.DS_Store

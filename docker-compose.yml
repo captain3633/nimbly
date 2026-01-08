@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: nimbly
+      POSTGRES_PASSWORD: nimbly
+      POSTGRES_DB: nimbly
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nimbly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://nimbly:nimbly@db:5432/nimbly
+      SECRET_KEY: dev-secret-key-change-in-production
+      MAGIC_LINK_EXPIRY_SECONDS: 900
+      UPLOAD_DIR: /app/uploads
+      LOG_LEVEL: INFO
+    volumes:
+      - ./api:/app/api
+      - ./uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
