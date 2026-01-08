@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Savvy voice and tone guidelines
 - Key product and technical decisions documentation
 - Deal intelligence constraints and ethical data practices
+- FastAPI project structure with SQLAlchemy models
+- Magic link authentication with JWT tokens
+- Receipt upload endpoint with file validation
+- Receipt listing and detail endpoints with pagination
+- Receipt parser with OCR, PDF extraction, and regex patterns
+- Store and product normalization utilities
+- Automatic price history tracking
+
+### Implemented
+- **Task 1:** Project foundation and database setup
+- **Task 2:** Magic link authentication system
+- **Task 3:** Receipt upload endpoint
+- **Task 4:** Receipt listing and detail endpoints
+- **Task 5:** Receipt parser implementation
 
 ### Documentation
 - Requirements document with MUST/SHOULD/COULD prioritization
@@ -21,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Task list with clear acceptance criteria and dependencies
 - Tone guide with examples of Savvy's voice
 - Decisions document explaining key tradeoffs
+- API README with setup instructions
 
 ## [0.0.0] - 2026-01-07
 
