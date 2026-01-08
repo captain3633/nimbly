@@ -51,16 +51,12 @@ export default function Home() {
               variants={fadeInUp}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link href="/auth">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Get Started
-                </Button>
-              </Link>
-              <Link href="/about">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                  Learn More
-                </Button>
-              </Link>
+              <Button size="lg" className="w-full sm:w-auto" asChild>
+                <Link href="/auth">Get Started</Link>
+              </Button>
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto" asChild>
+                <Link href="/about">Learn More</Link>
+              </Button>
             </motion.div>
           </motion.div>
         </div>

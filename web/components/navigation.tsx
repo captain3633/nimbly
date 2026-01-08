@@ -12,6 +12,7 @@ const navItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/savvy", label: "Meet Savvy" },
+  { href: "/contact", label: "Contact"},
 ];
 
 export function Navigation() {

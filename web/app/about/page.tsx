@@ -45,7 +45,7 @@ export default function AboutPage() {
                   Nimbly exists to help everyday people spend smarter on essentials, make better decisions without stress, and build healthier money habits over time.
                 </p>
                 <p className="text-text-secondary mb-4">
-                  We're not about extreme budgeting or complex financial tools. We're about small wins and real relief—helping you move smart, consistently.
+                  We're not about extreme budgeting or complex financial tools. We're about small wins and real relief, helping you move smart, consistently.
                 </p>
                 <p className="text-text-secondary">
                   Small, repeatable wins. Long game.
