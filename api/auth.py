@@ -1,11 +1,12 @@
 """
 Authentication endpoints and logic
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import logging
+import uuid
 
 from api.database import get_db
 from api.models import User
@@ -24,6 +25,7 @@ def create_magic_link_token(email: str) -> str:
         "type": "magic_link"
     }
     token = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    logger.debug(f"Created magic link token for {email}, expires at {expire}")
     return token
 
 def create_session_token(user_id: str, email: str) -> str:
@@ -36,6 +38,7 @@ def create_session_token(user_id: str, email: str) -> str:
         "type": "session"
     }
     token = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    logger.debug(f"Created session token for user {user_id}, expires at {expire}")
     return token
 
 def verify_token(token: str, expected_type: str) -> dict:
@@ -43,12 +46,14 @@ def verify_token(token: str, expected_type: str) -> dict:
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         if payload.get("type") != expected_type:
+            logger.warning(f"Token type mismatch: expected {expected_type}, got {payload.get('type')}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token type"
             )
         return payload
-    except JWTError:
+    except JWTError as e:
+        logger.warning(f"Token verification failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token"
@@ -64,13 +69,16 @@ async def request_magic_link(
     In development, the magic link is logged to console instead of emailed.
     """
     email = request.email
+    request_id = str(uuid.uuid4())[:8]
+    
+    logger.info(f"[{request_id}] Magic link requested for {email}")
     
     # Create magic link token
     token = create_magic_link_token(email)
     
     # In development, log the magic link to console
     magic_link = f"http://localhost:8000/api/auth/verify?token={token}"
-    logger.info(f"Magic link for {email}: {magic_link}")
+    logger.info(f"[{request_id}] Magic link generated for {email}")
     print(f"\n🔗 Magic Link for {email}:\n{magic_link}\n")
     
     return MagicLinkResponse(
@@ -86,15 +94,20 @@ async def verify_magic_link(
     """
     Verify magic link token and create or authenticate user session.
     """
+    request_id = str(uuid.uuid4())[:8]
+    
     # Verify the magic link token
     payload = verify_token(token, "magic_link")
     email = payload.get("sub")
     
     if not email:
+        logger.error(f"[{request_id}] Token missing email subject")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
+    
+    logger.info(f"[{request_id}] Verifying magic link for {email}")
     
     # Find or create user
     user = db.query(User).filter(User.email == email).first()
@@ -103,9 +116,9 @@ async def verify_magic_link(
         db.add(user)
         db.commit()
         db.refresh(user)
-        logger.info(f"Created new user: {email}")
+        logger.info(f"[{request_id}] Created new user: {email} (user_id={user.id})")
     else:
-        logger.info(f"User authenticated: {email}")
+        logger.info(f"[{request_id}] User authenticated: {email} (user_id={user.id})")
     
     # Create session token
     session_token = create_session_token(user.id, user.email)
@@ -127,6 +140,7 @@ def get_current_user(
     user_id = payload.get("sub")
     
     if not user_id:
+        logger.error("Session token missing user ID")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid session token"
@@ -134,6 +148,7 @@ def get_current_user(
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
+        logger.error(f"User not found for ID: {user_id}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found"

@@ -90,6 +90,23 @@ The application automatically creates database tables on startup. For production
 
 See `.env.example` for all available configuration options.
 
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/request-magic-link` - Request magic link (logged to console in dev)
+- `GET /api/auth/verify?token=<token>` - Verify magic link and get session token
+
+### Receipts
+- `POST /api/receipts/upload` - Upload receipt (requires Bearer token)
+- `GET /api/receipts` - List user's receipts (paginated)
+- `GET /api/receipts/{id}` - Get receipt details with line items
+
+### Insights
+- `GET /api/insights` - Generate insights from user's receipt data
+
+### Health
+- `GET /health` - Health check endpoint
+
 ## API Documentation
 
 Once the server is running, visit:

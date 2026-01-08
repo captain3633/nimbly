@@ -5,8 +5,8 @@ Move lighter. Spend smarter.
 **Nimbly** is a people-first app for **smarter everyday spending**, starting with groceries.  
 It highlights deals, surfaces clearances, and nudges you toward better timing without guilt, pressure, or finance jargon.
 
-Nimbly isn’t about extreme budgeting.  
-It’s about **moving smart, consistently**.
+Nimbly isn't about extreme budgeting.  
+It's about **moving smart, consistently**.
 
 ---
 
@@ -14,7 +14,7 @@ It’s about **moving smart, consistently**.
 
 **Savvy** is your in-app guide.
 
-Savvy keeps an eye on prices, notices patterns, and gives you a heads-up when there’s a better move to make.
+Savvy keeps an eye on prices, notices patterns, and gives you a heads-up when there's a better move to make.
 
 No lectures.  
 No judgment.  
@@ -28,6 +28,22 @@ Just the right info at the right time.
 - Helps you spot better buying opportunities  
 - Encourages smarter timing on everyday purchases  
 - Keeps the experience fast, light, and human  
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Start services
+docker-compose up
+
+# Seed database (in another terminal)
+docker-compose exec api python -m api.seed
+
+# Access API at http://localhost:8000/docs
+```
+
+See `api/README.md` for detailed setup and `docs/TESTING.md` for testing guide.
 
 ---
 
@@ -59,9 +75,15 @@ Small, repeatable wins. Long game.
 
 ## 🚧 Project status
 
-Nimbly v0 is in active development.  
-Documentation and specifications are complete.  
-Backend implementation is ready to begin.
+Nimbly v0 backend is complete with:
+- ✅ Magic link authentication
+- ✅ Receipt upload and parsing (OCR)
+- ✅ Price history tracking
+- ✅ Insight generation
+- ✅ Comprehensive error handling
+- ✅ Structured logging
+- ✅ Docker deployment
+- ✅ Test suite
 
 See `docs/` for complete requirements, design, and implementation plan.
 
@@ -79,9 +101,9 @@ See `docs/` for complete requirements, design, and implementation plan.
 
 ## 🧠 Philosophy
 
-> Move fast. Stay aware. Don’t get played.
+> Move fast. Stay aware. Don't get played.
 
-That’s Nimbly.
+That's Nimbly.
 
 ---
 

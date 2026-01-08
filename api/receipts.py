@@ -63,9 +63,25 @@ async def upload_receipt(
     """
     Upload a receipt file (JPEG, PNG, PDF, or TXT).
     Requires authentication via Bearer token.
+    
+    The receipt will be parsed automatically using OCR for images
+    and text extraction for PDFs. Parsing results are available
+    immediately in the response.
+    
+    **Supported formats:** JPEG, PNG, PDF, TXT
+    
+    **Example:**
+    ```bash
+    curl -X POST "http://localhost:8000/api/receipts/upload" \\
+      -H "Authorization: Bearer YOUR_TOKEN" \\
+      -F "file=@receipt.jpg"
+    ```
     """
+    request_id = str(uuid.uuid4())[:8]
+    
     # Extract token from Authorization header
     if not authorization.startswith("Bearer "):
+        logger.warning(f"[{request_id}] Invalid authorization header format")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authorization header"
@@ -74,8 +90,11 @@ async def upload_receipt(
     token = authorization.replace("Bearer ", "")
     user = get_current_user(token, db)
     
+    logger.info(f"[{request_id}] Receipt upload started: user={user.id}, filename={file.filename}")
+    
     # Validate file format
     if not validate_file_format(file.filename):
+        logger.warning(f"[{request_id}] Invalid file format: {file.filename}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Receipt must be JPEG, PNG, PDF, or text file"
@@ -84,6 +103,7 @@ async def upload_receipt(
     try:
         # Save file to disk
         file_path = save_receipt_file(user.id, file)
+        logger.info(f"[{request_id}] File saved: {file_path}")
         
         # Create receipt record
         receipt = Receipt(
@@ -95,13 +115,14 @@ async def upload_receipt(
         db.commit()
         db.refresh(receipt)
         
-        logger.info(f"Receipt uploaded: user={user.id}, receipt={receipt.id}, file={file.filename}")
+        logger.info(f"[{request_id}] Receipt record created: receipt_id={receipt.id}")
         
         # Parse receipt synchronously
         try:
             parse_receipt(receipt, db, settings.upload_dir)
+            logger.info(f"[{request_id}] Receipt parsed: status={receipt.parse_status.value}")
         except Exception as parse_error:
-            logger.error(f"Parsing failed but receipt saved: {str(parse_error)}")
+            logger.error(f"[{request_id}] Parsing failed but receipt saved: {str(parse_error)}")
         
         return ReceiptUploadResponse(
             receipt_id=receipt.id,
@@ -110,7 +131,7 @@ async def upload_receipt(
         )
     
     except Exception as e:
-        logger.error(f"Receipt upload failed: {str(e)}", exc_info=True)
+        logger.error(f"[{request_id}] Receipt upload failed: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to upload receipt"
@@ -126,7 +147,19 @@ async def list_receipts(
     """
     List all receipts for authenticated user.
     Returns paginated list sorted by upload timestamp (newest first).
+    
+    **Query Parameters:**
+    - limit: Number of receipts per page (1-100, default 20)
+    - offset: Number of receipts to skip (default 0)
+    
+    **Example:**
+    ```bash
+    curl -X GET "http://localhost:8000/api/receipts?limit=10&offset=0" \\
+      -H "Authorization: Bearer YOUR_TOKEN"
+    ```
     """
+    request_id = str(uuid.uuid4())[:8]
+    
     # Extract token and get user
     if not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -137,11 +170,15 @@ async def list_receipts(
     token = authorization.replace("Bearer ", "")
     user = get_current_user(token, db)
     
+    logger.info(f"[{request_id}] Listing receipts: user={user.id}, limit={limit}, offset={offset}")
+    
     # Query receipts
     query = db.query(Receipt).filter(Receipt.user_id == user.id)
     total = query.count()
     
     receipts = query.order_by(Receipt.upload_timestamp.desc()).offset(offset).limit(limit).all()
+    
+    logger.info(f"[{request_id}] Found {len(receipts)} receipts (total={total})")
     
     # Build response
     receipt_items = []
@@ -170,8 +207,16 @@ async def get_receipt_detail(
 ):
     """
     Get detailed information for a specific receipt.
-    Includes all line items.
+    Includes all line items and parsing status.
+    
+    **Example:**
+    ```bash
+    curl -X GET "http://localhost:8000/api/receipts/{receipt_id}" \\
+      -H "Authorization: Bearer YOUR_TOKEN"
+    ```
     """
+    request_id = str(uuid.uuid4())[:8]
+    
     # Extract token and get user
     if not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -182,6 +227,8 @@ async def get_receipt_detail(
     token = authorization.replace("Bearer ", "")
     user = get_current_user(token, db)
     
+    logger.info(f"[{request_id}] Fetching receipt detail: user={user.id}, receipt={receipt_id}")
+    
     # Query receipt
     receipt = db.query(Receipt).filter(
         Receipt.id == receipt_id,
@@ -189,10 +236,13 @@ async def get_receipt_detail(
     ).first()
     
     if not receipt:
+        logger.warning(f"[{request_id}] Receipt not found or unauthorized: receipt={receipt_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Receipt not found or you don't have access"
         )
+    
+    logger.info(f"[{request_id}] Receipt found: {len(receipt.line_items)} line items")
     
     # Build line items response
     line_items = []
