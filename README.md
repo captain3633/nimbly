@@ -43,7 +43,7 @@ docker-compose exec api python -m api.seed
 # Access API at http://localhost:8000/docs
 ```
 
-See `api/README.md` for detailed setup and `docs/TESTING.md` for testing guide.
+See `api/README.md` for detailed setup and `docs/testing.md` for testing guide.
 
 ---
 

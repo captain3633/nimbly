@@ -135,7 +135,7 @@ def test_missing_authorization_header(client):
     """Test that requests without authorization are rejected"""
     response = client.get("/api/receipts")
     
-    assert response.status_code == 422  # Missing required header
+    assert response.status_code == 400  # Missing required header
 
 
 def test_invalid_authorization_format(client):

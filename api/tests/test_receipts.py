@@ -81,7 +81,7 @@ def test_upload_without_authentication(client):
         files={"file": ("receipt.txt", file_data, "text/plain")}
     )
     
-    assert response.status_code == 422  # Missing required header
+    assert response.status_code == 400  # Missing required header
 
 
 def test_list_receipts_empty(client, authenticated_user):

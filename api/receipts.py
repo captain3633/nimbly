@@ -57,7 +57,7 @@ def save_receipt_file(user_id: uuid.UUID, file: UploadFile) -> str:
 @router.post("/upload", response_model=ReceiptUploadResponse)
 async def upload_receipt(
     file: UploadFile = File(...),
-    authorization: str = Header(...),
+    authorization: str = Header(None),
     db: Session = Depends(get_db)
 ):
     """
@@ -78,6 +78,14 @@ async def upload_receipt(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
+    
+    # Check if authorization header is present
+    if not authorization:
+        logger.warning(f"[{request_id}] Missing authorization header")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
     
     # Extract token from Authorization header
     if not authorization.startswith("Bearer "):
@@ -139,7 +147,7 @@ async def upload_receipt(
 
 @router.get("", response_model=ReceiptListResponse)
 async def list_receipts(
-    authorization: str = Header(...),
+    authorization: str = Header(None),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -159,6 +167,13 @@ async def list_receipts(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
+    
+    # Check if authorization header is present
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
     
     # Extract token and get user
     if not authorization.startswith("Bearer "):
@@ -202,7 +217,7 @@ async def list_receipts(
 @router.get("/{receipt_id}", response_model=ReceiptDetailResponse)
 async def get_receipt_detail(
     receipt_id: uuid.UUID,
-    authorization: str = Header(...),
+    authorization: str = Header(None),
     db: Session = Depends(get_db)
 ):
     """
@@ -216,6 +231,13 @@ async def get_receipt_detail(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
+    
+    # Check if authorization header is present
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
     
     # Extract token and get user
     if not authorization.startswith("Bearer "):

@@ -9,8 +9,12 @@ from fastapi.testclient import TestClient
 from api.database import Base, get_db
 from api.main import app
 
-# Test database URL
-TEST_DATABASE_URL = "postgresql://nimbly:nimbly@localhost:5432/nimbly_test"
+# Test database URL - use 'db' hostname when running in Docker
+import os
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql://nimbly:nimbly@db:5432/nimbly_test"
+)
 
 @pytest.fixture(scope="function")
 def db_engine():

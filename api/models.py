@@ -77,7 +77,6 @@ class LineItem(Base):
     
     # Relationships
     receipt = relationship("Receipt", back_populates="line_items")
-    price_history = relationship("PriceHistory", back_populates="source_line_item")
 
 class PriceHistory(Base):
     __tablename__ = "price_history"
@@ -92,7 +91,7 @@ class PriceHistory(Base):
     
     # Relationships
     store = relationship("Store", back_populates="price_history")
-    source_line_item = relationship("LineItem", back_populates="price_history")
+    source_line_item = relationship("LineItem")
     
     # Composite indexes for efficient queries
     __table_args__ = (

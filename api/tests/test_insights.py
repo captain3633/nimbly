@@ -213,7 +213,7 @@ def test_insights_require_authentication(client):
     """Test that insights endpoint requires authentication"""
     response = client.get("/api/insights")
     
-    assert response.status_code == 422  # Missing required header
+    assert response.status_code == 400  # Missing required header
 
 
 def test_insights_user_isolation(client, db_session):

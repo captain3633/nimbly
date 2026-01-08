@@ -2,7 +2,7 @@
 Property-based tests using Hypothesis for critical correctness properties
 """
 import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, strategies as st, settings, HealthCheck
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -17,7 +17,7 @@ product_names = st.text(min_size=1, max_size=200, alphabet=st.characters(blackli
 prices = st.decimals(min_value=Decimal("0.01"), max_value=Decimal("999.99"), places=2)
 
 
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(email=emails)
 def test_property_user_email_uniqueness(db_session, email):
     """Property: Each email should map to exactly one user"""
@@ -60,7 +60,7 @@ def test_property_product_normalization_consistency(product_name):
     assert normalized1 == normalized1.lower()  # Should be lowercase
 
 
-@settings(max_examples=50)
+@settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(
     email=emails,
     store_name=store_names,
@@ -135,7 +135,7 @@ def test_property_referential_integrity(db_session, email, store_name, product_n
     db_session.commit()
 
 
-@settings(max_examples=50)
+@settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(
     store_name1=store_names,
     store_name2=store_names

@@ -1,6 +1,8 @@
 """
 Pydantic schemas for request/response validation
 """
+from __future__ import annotations
+
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime, date
@@ -66,9 +68,9 @@ class ReceiptDetailResponse(BaseModel):
 
 # Insight schemas
 class InsightDataPoint(BaseModel):
-    date: Optional[date]
-    price: Optional[Decimal]
-    receipt_id: Optional[UUID]
+    date: Optional[date] = None
+    price: Optional[Decimal] = None
+    receipt_id: Optional[UUID] = None
 
 class Insight(BaseModel):
     type: str

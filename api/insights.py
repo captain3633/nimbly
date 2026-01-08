@@ -232,13 +232,20 @@ def generate_store_pattern_insights(user_id, db: Session) -> List[Insight]:
 
 @router.get("", response_model=InsightsResponse)
 async def get_insights(
-    authorization: str = Header(...),
+    authorization: str = Header(None),
     db: Session = Depends(get_db)
 ):
     """
     Generate and return insights for authenticated user.
     Insights are generated on-demand based on user's receipt data.
     """
+    # Check if authorization header is present
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
+    
     # Extract token and get user
     if not authorization.startswith("Bearer "):
         raise HTTPException(
