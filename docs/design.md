@@ -665,3 +665,561 @@ The properties focus on:
 - Security and authorization (session management, access control)
 - API contract compliance (response formats, error handling)
 - System reliability (logging, error recovery)
+
+
+---
+
+## UI Architecture (Phase 1)
+
+### Technology Stack
+
+**Web Application:**
+- Framework: Next.js 14+ (App Router)
+- Styling: Tailwind CSS
+- Components: shadcn/ui
+- State: React hooks + Context API
+- API Client: fetch with custom wrapper
+- Auth: JWT in httpOnly cookies or localStorage
+
+**Mobile Application:**
+- Framework: React Native with Expo
+- Navigation: React Navigation
+- Styling: StyleSheet with theme system
+- State: React hooks + Context API
+- API Client: fetch with custom wrapper
+- Auth: JWT in Expo SecureStore
+- Camera: expo-camera or expo-image-picker
+
+### UI Flow Diagrams
+
+#### Authentication Flow
+
+```
+┌─────────────────┐
+│  Landing/Login  │
+│  Enter Email    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  POST /api/auth │
+│ /request-magic  │
+│      -link      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ "Magic link     │
+│  sent" screen   │
+│ (check console) │
+└────────┬────────┘
+         │
+         ▼ (user clicks link)
+┌─────────────────┐
+│  GET /api/auth  │
+│ /verify-magic   │
+│      -link      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Store session   │
+│     token       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Redirect to    │
+│  Receipts List  │
+└─────────────────┘
+```
+
+#### Receipt Upload Flow
+
+```
+┌─────────────────┐
+│  Upload Screen  │
+│ (Camera/Picker) │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Select/Capture  │
+│     Image       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Validate File   │
+│ (format, size)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  POST /api/     │
+│receipts/upload  │
+│ (multipart)     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Show Progress   │
+│   Indicator     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Receipt Created │
+│ (pending parse) │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Show Success    │
+│   Message       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Navigate to    │
+│ Receipt Detail  │
+└─────────────────┘
+```
+
+#### Receipt List Flow
+
+```
+┌─────────────────┐
+│  Receipts List  │
+│     Screen      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  GET /api/      │
+│   receipts      │
+│ ?limit=20&      │
+│  offset=0       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Display List    │
+│ (store, date,   │
+│  total, status) │
+└────────┬────────┘
+         │
+         ├─────────────────┐
+         │                 │
+         ▼                 ▼
+┌─────────────────┐  ┌─────────────────┐
+│  Empty State    │  │  Load More      │
+│ "Upload first   │  │  (pagination)   │
+│   receipt"      │  │                 │
+└─────────────────┘  └─────────────────┘
+         │
+         ▼ (tap receipt)
+┌─────────────────┐
+│  Navigate to    │
+│ Receipt Detail  │
+└─────────────────┘
+```
+
+#### Receipt Detail Flow
+
+```
+┌─────────────────┐
+│ Receipt Detail  │
+│     Screen      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  GET /api/      │
+│receipts/{id}    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Display Receipt │
+│ - Store name    │
+│ - Date          │
+│ - Total         │
+│ - Parse status  │
+│ - Line items    │
+└────────┬────────┘
+         │
+         ├─────────────────┐
+         │                 │
+         ▼                 ▼
+┌─────────────────┐  ┌─────────────────┐
+│ Parse Success   │  │ Parse Failed/   │
+│ Show all items  │  │ Needs Review    │
+│                 │  │ Show error msg  │
+└─────────────────┘  └─────────────────┘
+```
+
+#### Insights Feed Flow
+
+```
+┌─────────────────┐
+│  Insights Feed  │
+│     Screen      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  GET /api/      │
+│    insights     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Display Insights│
+│ - Type          │
+│ - Title         │
+│ - Description   │
+│ - Confidence    │
+│ - Data points   │
+└────────┬────────┘
+         │
+         ├─────────────────┐
+         │                 │
+         ▼                 ▼
+┌─────────────────┐  ┌─────────────────┐
+│ Has Insights    │  │ Not Enough Data │
+│ Show feed with  │  │ "Savvy is       │
+│ Sage accents    │  │  learning..."   │
+└─────────────────┘  └─────────────────┘
+         │
+         ▼ (expand insight)
+┌─────────────────┐
+│ Show Underlying │
+│  Data Points    │
+│ (receipts, etc) │
+└─────────────────┘
+```
+
+### Component Architecture
+
+#### Web (Next.js)
+
+```
+/app
+├── layout.tsx              # Root layout with theme provider
+├── page.tsx                # Landing/login page
+├── (auth)
+│   ├── login/
+│   │   └── page.tsx        # Email input
+│   └── verify/
+│       └── page.tsx        # Magic link verification
+├── (app)                   # Protected routes
+│   ├── layout.tsx          # App layout with nav
+│   ├── receipts/
+│   │   ├── page.tsx        # Receipt list
+│   │   ├── [id]/
+│   │   │   └── page.tsx    # Receipt detail
+│   │   └── upload/
+│   │       └── page.tsx    # Upload form
+│   └── insights/
+│       └── page.tsx        # Insights feed
+/components
+├── ui/                     # shadcn/ui components
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── input.tsx
+│   └── ...
+├── receipt-card.tsx        # Receipt list item
+├── receipt-detail.tsx      # Receipt full view
+├── insight-card.tsx        # Insight display
+├── upload-form.tsx         # File upload
+└── theme-provider.tsx      # Light/dark mode
+/lib
+├── api.ts                  # API client
+├── auth.ts                 # Auth helpers
+└── utils.ts                # Utilities
+```
+
+#### Mobile (React Native)
+
+```
+/src
+├── screens/
+│   ├── auth/
+│   │   ├── LoginScreen.tsx
+│   │   └── VerifyScreen.tsx
+│   ├── receipts/
+│   │   ├── ReceiptListScreen.tsx
+│   │   ├── ReceiptDetailScreen.tsx
+│   │   └── UploadScreen.tsx
+│   └── insights/
+│       └── InsightsFeedScreen.tsx
+├── components/
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Input.tsx
+│   │   └── ...
+│   ├── ReceiptCard.tsx
+│   ├── ReceiptDetail.tsx
+│   ├── InsightCard.tsx
+│   └── UploadForm.tsx
+├── navigation/
+│   ├── AppNavigator.tsx    # Main navigation
+│   └── AuthNavigator.tsx   # Auth flow
+├── lib/
+│   ├── api.ts              # API client
+│   ├── auth.ts             # Auth helpers
+│   └── storage.ts          # Secure storage
+├── theme/
+│   ├── colors.ts           # From visuals.md
+│   ├── typography.ts
+│   └── spacing.ts
+└── App.tsx                 # Root component
+```
+
+### State Management
+
+**Approach:** Keep it simple with React hooks and Context API.
+
+**Auth Context:**
+```typescript
+interface AuthContext {
+  user: User | null;
+  token: string | null;
+  login: (email: string) => Promise<void>;
+  verify: (token: string) => Promise<void>;
+  logout: () => void;
+  isLoading: boolean;
+}
+```
+
+**Theme Context:**
+```typescript
+interface ThemeContext {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}
+```
+
+**No global state for receipts or insights** - fetch on demand and use local component state.
+
+### API Client Pattern
+
+```typescript
+// lib/api.ts
+class ApiClient {
+  private baseUrl: string;
+  private getToken: () => string | null;
+
+  async request<T>(
+    endpoint: string,
+    options?: RequestInit
+  ): Promise<T> {
+    const token = this.getToken();
+    const headers = {
+      ...options?.headers,
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new ApiError(response);
+    }
+
+    return response.json();
+  }
+
+  // Typed methods
+  auth = {
+    requestMagicLink: (email: string) => 
+      this.request('/api/auth/request-magic-link', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+    verifyMagicLink: (token: string) =>
+      this.request('/api/auth/verify-magic-link', {
+        method: 'GET',
+        params: { token },
+      }),
+  };
+
+  receipts = {
+    list: (params: { limit?: number; offset?: number }) =>
+      this.request<ReceiptListResponse>('/api/receipts', {
+        params,
+      }),
+    get: (id: string) =>
+      this.request<ReceiptDetailResponse>(`/api/receipts/${id}`),
+    upload: (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return this.request<ReceiptUploadResponse>('/api/receipts/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+  };
+
+  insights = {
+    list: () =>
+      this.request<InsightsResponse>('/api/insights'),
+  };
+}
+```
+
+### Visual System Implementation
+
+**Colors (Tailwind Config):**
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // Brand
+        sage: '#5F7D73',
+        amber: '#D9A441',
+        
+        // Light mode
+        light: {
+          bg: '#FAFAF7',
+          card: '#FFFFFF',
+          surface: '#F1F2EE',
+          text: {
+            primary: '#2E2E2E',
+            secondary: '#5C5C5C',
+            muted: '#8A8A8A',
+          },
+          border: '#E2E3DF',
+        },
+        
+        // Dark mode
+        dark: {
+          bg: '#0F1513',
+          card: '#1C2421',
+          surface: '#161D1A',
+          text: {
+            primary: '#EDEFEA',
+            secondary: '#C7CBC4',
+            muted: '#9AA09A',
+          },
+          border: '#2A332F',
+        },
+      },
+    },
+  },
+  darkMode: 'class',
+};
+```
+
+**Component Example:**
+```typescript
+// components/ui/button.tsx
+export function Button({ variant = 'primary', ...props }) {
+  return (
+    <button
+      className={cn(
+        'rounded-xl px-6 py-3 font-medium transition-colors',
+        variant === 'primary' && 
+          'bg-sage text-white hover:bg-sage/90',
+        variant === 'secondary' && 
+          'bg-light-surface dark:bg-dark-surface',
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+### Error Handling
+
+**User-Facing Errors:**
+- Network errors: "Couldn't connect. Check your internet and try again."
+- Auth errors: "Magic link expired. Request a new one."
+- Upload errors: "Couldn't upload receipt. Try again."
+- Parse errors: "Couldn't read this receipt. Try uploading a clearer image."
+
+**All error copy must follow docs/tone.md** - calm, clear, actionable.
+
+### Loading States
+
+- Skeleton loaders for lists
+- Spinners for actions (upload, submit)
+- Progress bars for file uploads
+- Optimistic UI where appropriate (e.g., add receipt to list immediately)
+
+### Empty States
+
+- New user (no receipts): "Upload your first receipt to help Savvy start learning."
+- No insights yet: "Savvy is learning. Upload more receipts to see patterns."
+- Network error: "Couldn't load receipts. Check your connection and try again."
+
+All empty state copy must follow docs/tone.md.
+
+### Accessibility
+
+- Semantic HTML elements
+- ARIA labels where needed
+- Keyboard navigation support
+- Focus indicators
+- Color contrast meets WCAG AA
+- Screen reader friendly
+
+### Performance Considerations
+
+- Image optimization (Next.js Image component, React Native Image)
+- Lazy loading for lists
+- Debounced search/filter inputs
+- Optimistic UI updates
+- Cached API responses where appropriate
+- Code splitting (Next.js automatic, React Native manual)
+
+### Testing Strategy
+
+**Unit Tests:**
+- Component rendering
+- User interactions
+- API client methods
+- Auth helpers
+
+**Integration Tests:**
+- Full user flows (login → upload → view)
+- API integration
+- Navigation flows
+
+**Manual Testing:**
+- Both light and dark modes
+- Various screen sizes
+- Error scenarios
+- Empty states
+- Loading states
+
+### Development Workflow
+
+1. Start backend: `docker-compose up`
+2. Start web: `npm run dev` (Next.js)
+3. Start mobile: `expo start` (React Native)
+4. API available at `http://localhost:8000`
+5. Web available at `http://localhost:3000`
+6. Mobile via Expo Go app
+
+### Environment Configuration
+
+**Web (.env.local):**
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+**Mobile (app.config.js):**
+```javascript
+export default {
+  extra: {
+    apiUrl: process.env.API_URL || 'http://localhost:8000',
+  },
+};
+```

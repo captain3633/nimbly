@@ -367,3 +367,358 @@ These three tasks create the foundation for all subsequent features. Once comple
 - Property-based tests (Task 16) provide high-confidence correctness validation
 - The seed script (Task 13) is essential for manual testing and demos
 - Performance optimization (Task 17) can be deferred if timeline is tight
+
+
+---
+
+## Milestone: Phase 1 - Usable Interface
+
+Build calm, functional web and mobile interfaces that validate the API and express Savvy's tone. Focus on core flows: authentication, receipt upload, receipt viewing, and insights display.
+
+### UI-1. Project Setup and Design System ✅ COMPLETE
+
+**Description:**
+Set up Next.js web app and React Native mobile app with proper folder structure. Implement the visual system from docs/visuals.md including colors, typography, and base components. Support both light and dark mode from day one.
+
+**Acceptance Criteria:**
+- ✅ Next.js 16 project initialized with TypeScript
+- ✅ React Native project initialized with Expo
+- ✅ Tailwind CSS v4 configured with custom color tokens
+- ✅ Base UI components created following shadcn/ui patterns
+- ✅ Light and dark mode toggle working (both platforms)
+- ✅ Base components: Button, Card, Input, Text
+- ✅ All colors match docs/visuals.md exactly
+- ✅ No additional colors introduced
+- ✅ Theme providers implemented for both platforms
+- ✅ Demo pages showcasing design system
+
+**Dependencies:** Phase 0 complete
+
+**Priority:** Core
+
+**Status:** Complete (January 8, 2026)
+
+---
+
+### UI-2. Magic Link Authentication Flow (Web)
+
+**Description:**
+Implement the magic link authentication flow for web. User enters email, receives magic link (shown in console for dev), clicks link, gets authenticated, and receives session token stored in localStorage/cookies.
+
+**Acceptance Criteria:**
+- Email input screen with validation
+- "Magic link sent" confirmation screen
+- Magic link verification and redirect
+- Session token stored securely
+- Protected route wrapper component
+- Logout functionality
+- Error states for invalid/expired tokens
+- Loading states during API calls
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-1
+
+**Priority:** Core
+
+---
+
+### UI-3. Magic Link Authentication Flow (Mobile)
+
+**Description:**
+Implement the magic link authentication flow for mobile. Similar to web but with mobile-specific considerations (deep linking, secure storage).
+
+**Acceptance Criteria:**
+- Email input screen with validation
+- "Magic link sent" confirmation screen
+- Deep link handling for magic link
+- Session token stored in secure storage
+- Protected screen wrapper component
+- Logout functionality
+- Error states for invalid/expired tokens
+- Loading states during API calls
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-1
+
+**Priority:** Core
+
+---
+
+### UI-4. Receipt Upload Flow (Web)
+
+**Description:**
+Implement receipt upload for web using file picker. Show upload progress, parsing status, and success/error states. Follow the calm, clear tone from docs/tone.md.
+
+**Acceptance Criteria:**
+- File picker for JPEG, PNG, PDF, TXT
+- File validation before upload
+- Upload progress indicator
+- Parsing status display
+- Success confirmation with receipt details
+- Error handling for invalid files
+- Error handling for upload failures
+- Copy follows docs/tone.md (e.g., "Receipt from Whole Foods added. 12 items recorded.")
+- Redirects to receipt detail after success
+
+**Dependencies:** UI-2
+
+**Priority:** Core
+
+---
+
+### UI-5. Receipt Upload Flow (Mobile)
+
+**Description:**
+Implement receipt upload for mobile with camera integration and file picker. Show upload progress, parsing status, and success/error states.
+
+**Acceptance Criteria:**
+- Camera integration for taking receipt photos
+- File picker for selecting from gallery
+- Image preview before upload
+- File validation before upload
+- Upload progress indicator
+- Parsing status display
+- Success confirmation with receipt details
+- Error handling for invalid files
+- Error handling for upload failures
+- Copy follows docs/tone.md
+- Redirects to receipt detail after success
+
+**Dependencies:** UI-3
+
+**Priority:** Core
+
+---
+
+### UI-6. Receipt List View (Web)
+
+**Description:**
+Display paginated list of user's receipts sorted by upload date (newest first). Show store name, date, total, and parse status. Handle empty state for new users.
+
+**Acceptance Criteria:**
+- List displays all receipts with key info
+- Sorted by upload timestamp descending
+- Pagination controls (load more or infinite scroll)
+- Parse status indicators (success, pending, failed, needs review)
+- Empty state for new users with helpful copy
+- Loading state while fetching
+- Error state for API failures
+- Click receipt to view details
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-2
+
+**Priority:** Core
+
+---
+
+### UI-7. Receipt List View (Mobile)
+
+**Description:**
+Display scrollable list of user's receipts sorted by upload date (newest first). Show store name, date, total, and parse status. Handle empty state for new users.
+
+**Acceptance Criteria:**
+- List displays all receipts with key info
+- Sorted by upload timestamp descending
+- Infinite scroll or pull-to-refresh
+- Parse status indicators (success, pending, failed, needs review)
+- Empty state for new users with helpful copy
+- Loading state while fetching
+- Error state for API failures
+- Tap receipt to view details
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-3
+
+**Priority:** Core
+
+---
+
+### UI-8. Receipt Detail View (Web)
+
+**Description:**
+Display full receipt details including store, date, total, and all line items. Show parse status and any errors. Allow navigation back to list.
+
+**Acceptance Criteria:**
+- Display store name, purchase date, total amount
+- Display all line items with product, quantity, price
+- Show parse status clearly
+- Show parse errors if status is failed/needs review
+- Loading state while fetching
+- Error state for API failures
+- Back navigation to receipt list
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-6
+
+**Priority:** Core
+
+---
+
+### UI-9. Receipt Detail View (Mobile)
+
+**Description:**
+Display full receipt details including store, date, total, and all line items. Show parse status and any errors. Allow navigation back to list.
+
+**Acceptance Criteria:**
+- Display store name, purchase date, total amount
+- Display all line items with product, quantity, price
+- Show parse status clearly
+- Show parse errors if status is failed/needs review
+- Loading state while fetching
+- Error state for API failures
+- Back navigation to receipt list
+- Copy follows docs/tone.md
+
+**Dependencies:** UI-7
+
+**Priority:** Core
+
+---
+
+### UI-10. Insights Feed (Web)
+
+**Description:**
+Display read-only feed of insights generated by Savvy. Show insight type, title, description, confidence level, and underlying data. Handle "not enough data yet" state gracefully.
+
+**Acceptance Criteria:**
+- Display all insights in a feed layout
+- Each insight shows type, title, description
+- Confidence level displayed (high/medium/low)
+- Underlying data points visible (expandable or inline)
+- "Not enough data yet" state with helpful copy
+- Loading state while fetching
+- Error state for API failures
+- Copy follows docs/tone.md exactly
+- Savvy UI accents use Sage color (#5F7D73)
+- Deal highlights use Amber (#D9A441) sparingly
+
+**Dependencies:** UI-6
+
+**Priority:** Core
+
+---
+
+### UI-11. Insights Feed (Mobile)
+
+**Description:**
+Display read-only feed of insights generated by Savvy. Show insight type, title, description, confidence level, and underlying data. Handle "not enough data yet" state gracefully.
+
+**Acceptance Criteria:**
+- Display all insights in a scrollable feed
+- Each insight shows type, title, description
+- Confidence level displayed (high/medium/low)
+- Underlying data points visible (expandable or inline)
+- "Not enough data yet" state with helpful copy
+- Loading state while fetching
+- Error state for API failures
+- Copy follows docs/tone.md exactly
+- Savvy UI accents use Sage color (#5F7D73)
+- Deal highlights use Amber (#D9A441) sparingly
+
+**Dependencies:** UI-7
+
+**Priority:** Core
+
+---
+
+### UI-12. Error and Loading States (Both Platforms)
+
+**Description:**
+Create consistent, reusable error and loading components for both web and mobile. Ensure all error messages follow the calm, helpful tone from docs/tone.md.
+
+**Acceptance Criteria:**
+- Loading spinner/skeleton components
+- Error message components
+- Empty state components
+- Network error handling
+- API error handling with user-friendly messages
+- Retry mechanisms where appropriate
+- All copy follows docs/tone.md
+- Consistent styling across both platforms
+
+**Dependencies:** UI-1
+
+**Priority:** Core
+
+---
+
+### UI-13. Navigation and Layout (Web)
+
+**Description:**
+Implement main navigation structure for web app. Simple, clear navigation between receipts, insights, and account/logout.
+
+**Acceptance Criteria:**
+- Top navigation bar or sidebar
+- Links to: Receipts, Insights, Upload, Logout
+- Active state indication
+- Responsive layout
+- Consistent across all pages
+- Follows visual guidelines
+
+**Dependencies:** UI-2
+
+**Priority:** Core
+
+---
+
+### UI-14. Navigation and Layout (Mobile)
+
+**Description:**
+Implement main navigation structure for mobile app. Simple, clear navigation between receipts, insights, and account/logout.
+
+**Acceptance Criteria:**
+- Bottom tab navigation or drawer
+- Tabs/links to: Receipts, Insights, Upload, Account
+- Active state indication
+- Consistent across all screens
+- Follows visual guidelines
+
+**Dependencies:** UI-3
+
+**Priority:** Core
+
+---
+
+### UI-15. API Integration Layer
+
+**Description:**
+Create clean API client layer for both web and mobile that handles authentication, error handling, and request/response formatting. Make it easy to call backend endpoints.
+
+**Acceptance Criteria:**
+- API client with typed methods for all endpoints
+- Automatic auth token injection
+- Error handling and transformation
+- Loading state management
+- Request/response TypeScript types
+- Environment-based API URL configuration
+- Works on both web and mobile
+
+**Dependencies:** UI-1
+
+**Priority:** Core
+
+---
+
+## Phase 1 UI Summary
+
+**Total Tasks:** 15
+**Core Tasks:** 15
+**Nice-to-Have Tasks:** 0
+
+**Estimated Timeline:**
+- Setup and design system: 1-2 days
+- Authentication flows: 2-3 days
+- Receipt upload flows: 2-3 days
+- Receipt list and detail: 2-3 days
+- Insights feed: 2-3 days
+- Polish and testing: 2-3 days
+
+**Total: 11-17 days for both web and mobile**
+
+**Key Principles:**
+- Follow docs/visuals.md strictly (colors, spacing, components)
+- Follow docs/tone.md for all copy
+- Support light and dark mode from day one
+- Focus on clarity and correctness over visual flair
+- Keep it calm, trustworthy, and functional
