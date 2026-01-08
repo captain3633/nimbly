@@ -23,7 +23,20 @@ export default function SavvyPage() {
         >
           <motion.div variants={fadeInUp} className="text-center mb-12">
             <div className="w-24 h-24 rounded-3xl bg-sage/10 flex items-center justify-center mx-auto mb-6">
-              <span className="text-6xl">🌾</span>
+              <motion.span
+                className="text-6xl inline-block"
+                animate={{
+                  rotate: [-3, 3, -3],
+                  x: [-2, 2, -2],
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                🌾
+              </motion.span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-bold text-text-primary mb-4">
               Meet Savvy
@@ -167,7 +180,7 @@ export default function SavvyPage() {
                   Why "Savvy"?
                 </h2>
                 <p className="text-text-secondary mb-4">
-                  The word "savvy" means having practical knowledge and understanding. That's exactly what this feature provides—practical insights based on your actual spending, not predictions or assumptions.
+                  The word "savvy" means having practical knowledge and understanding. That's exactly what this feature provides, practical insights based on your actual spending, not predictions or assumptions.
                 </p>
                 <p className="text-text-secondary">
                   Savvy helps you become more aware of your patterns without telling you what to do about them. The decisions are always yours.

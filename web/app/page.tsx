@@ -120,7 +120,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-text-secondary">
-                    Get a heads-up when there's a better move to make—no lectures, no judgment.
+                    Get a heads-up when there's a better move to make.
                   </p>
                 </CardContent>
               </Card>
@@ -172,7 +172,20 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <div className="w-16 h-16 rounded-2xl bg-sage/10 flex items-center justify-center mb-6">
-                <span className="text-3xl">🌾</span>
+                <motion.span
+                  className="text-3xl inline-block"
+                  animate={{
+                    rotate: [-3, 3, -3],
+                    x: [-2, 2, -2],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  🌾
+                </motion.span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold text-text-primary mb-4">
                 Meet Savvy

@@ -41,6 +41,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Phase 1: Usable Interface (In Progress)
 
+#### UI-2: Magic Link Authentication Flow (Web) - COMPLETE ✅ (2026-01-08)
+
+**Authentication Flow**
+- Email input with validation
+- Magic link request to backend API
+- Token verification from URL parameters
+- Session token storage in localStorage
+- Protected route wrapper component
+- Automatic redirect after authentication
+- Logout functionality
+
+**Components Created**
+- API client (`lib/api.ts`) with auth, receipts, and insights endpoints
+- Auth utilities (`lib/auth.ts`) for token management
+- Protected route wrapper (`components/protected-route.tsx`)
+- Receipts page with empty state
+- Updated navigation with auth state awareness
+
+**Error Handling**
+- Invalid/expired token errors
+- API error handling with user-friendly messages
+- Loading states during API calls
+- Network error handling
+
+**User Experience**
+- Smooth transitions and animations
+- Clear feedback for all states
+- Mobile-responsive design
+- Follows docs/tone.md for all copy
+
 #### UI-1: Project Setup and Design System - COMPLETE ✅ (2026-01-08)
 
 **Web Application**

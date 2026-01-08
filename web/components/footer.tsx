@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-sage/10 flex items-center justify-center">
                 <span className="text-2xl">🐇</span>
               </div>
               <span className="text-xl font-semibold text-text-primary">

@@ -19,7 +19,7 @@ function AppContent() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <View style={[styles.logoCircle, { backgroundColor: colors.card }]}>
+            <View style={[styles.logoCircle, { backgroundColor: 'rgba(95, 125, 115, 0.1)' }]}>
               <Text style={styles.logo}>🐇</Text>
             </View>
             <Text variant="h2" style={styles.logoText}>
@@ -144,7 +144,7 @@ function AppContent() {
         {/* Footer */}
         <View style={styles.footer}>
           <View style={styles.footerLogoContainer}>
-            <View style={[styles.footerLogoCircle, { backgroundColor: colors.card }]}>
+            <View style={[styles.footerLogoCircle, { backgroundColor: 'rgba(95, 125, 115, 0.1)' }]}>
               <Text style={styles.footerLogo}>🐇</Text>
             </View>
             <Text variant="body" style={styles.footerLogoText}>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   logoCircle: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   footerLogoCircle: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
