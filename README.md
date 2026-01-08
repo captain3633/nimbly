@@ -75,15 +75,29 @@ Small, repeatable wins. Long game.
 
 ## 🚧 Project status
 
-Nimbly v0 backend is complete with:
-- ✅ Magic link authentication
-- ✅ Receipt upload and parsing (OCR)
-- ✅ Price history tracking
-- ✅ Insight generation
-- ✅ Comprehensive error handling
-- ✅ Structured logging
-- ✅ Docker deployment
-- ✅ Test suite
+**Phase 0 (Backend Foundation):** Complete ✅
+- Magic link authentication
+- Receipt upload and parsing (OCR)
+- Price history tracking
+- Insight generation
+- Comprehensive error handling
+- Structured logging
+- Docker deployment
+- Test suite
+
+**Phase 1 (UI Foundation):** Complete ✅
+- Next.js web app with professional pages
+- React Native mobile app
+- Design system (Sage/Amber colors, light/dark mode)
+- Framer Motion animations
+- Netlify deployment ready
+
+**Phase 2 (Understanding):** In Progress 🚧
+- ✅ Enhanced OCR preprocessing (OpenCV)
+- ✅ Improved store detection (fuzzy matching)
+- ✅ Smarter line item extraction (quantities, unit prices)
+- ✅ Granular confidence scoring
+- 🔄 New insight types (coming soon)
 
 See `docs/` for complete requirements, design, and implementation plan.
 

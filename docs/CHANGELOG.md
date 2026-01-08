@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 2: Understanding (In Progress)
+
+#### Enhanced Receipt Parsing - IN PROGRESS (2026-01-08)
+
+**OCR Preprocessing**
+- Image preprocessing with OpenCV (grayscale, adaptive thresholding, denoising)
+- Contrast enhancement for better text recognition
+- Custom Tesseract configuration for improved accuracy
+
+**Store Detection**
+- Expanded store patterns (15+ major chains with variations)
+- Fuzzy matching with rapidfuzz for store name recognition
+- Confidence scoring for store detection (0.0-1.0)
+- Automatic store matching to existing database entries
+
+**Line Item Extraction**
+- Multiple pattern matching for different receipt formats
+- Quantity and unit price extraction support
+- Smart filtering of non-product lines (totals, tax, headers)
+- Extraction metadata tracking (success rate, skipped lines)
+
+**Confidence Scoring**
+- Granular confidence scores for each extracted field
+- Overall confidence calculation (0.0-1.0)
+- Detailed issue tracking for low-confidence parses
+- Total validation against item sum with tax consideration
+
+**Dependencies Added**
+- opencv-python-headless for image preprocessing
+- numpy for image processing
+- rapidfuzz for fuzzy string matching
+
 ### Phase 1: Usable Interface (In Progress)
 
 #### UI-1: Project Setup and Design System - COMPLETE ✅ (2026-01-08)
