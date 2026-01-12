@@ -12,7 +12,7 @@ import logging
 from api.database import get_db
 from api.models import Receipt, LineItem, PriceHistory, Store, ParseStatus
 from api.schemas import InsightsResponse, Insight, InsightDataPoint
-from api.auth import get_current_user
+from api.auth import get_current_user_from_header
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -232,30 +232,13 @@ def generate_store_pattern_insights(user_id, db: Session) -> List[Insight]:
 
 @router.get("", response_model=InsightsResponse)
 async def get_insights(
-    authorization: str = Header(None),
+    user = Depends(get_current_user_from_header),
     db: Session = Depends(get_db)
 ):
     """
     Generate and return insights for authenticated user.
     Insights are generated on-demand based on user's receipt data.
     """
-    # Check if authorization header is present
-    if not authorization:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authorization header"
-        )
-    
-    # Extract token and get user
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    user = get_current_user(token, db)
-    
     logger.info(f"Generating insights for user {user.id}")
     
     # Generate all insight types

@@ -10,6 +10,20 @@ from decimal import Decimal
 from uuid import UUID
 
 # Auth schemas
+class SignUpRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+
+class SignInRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class AuthResponse(BaseModel):
+    user_id: UUID
+    email: str
+    session_token: str
+    auth_provider: str
+
 class MagicLinkRequest(BaseModel):
     email: EmailStr
 

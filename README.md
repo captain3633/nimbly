@@ -10,6 +10,22 @@ It's about **moving smart, consistently**.
 
 ---
 
+## 📑 Table of Contents
+
+- [🤖 Meet Savvy](#-meet-savvy)
+- [✨ What Nimbly does](#-what-nimbly-does)
+- [🌱 Why Nimbly exists](#-why-nimbly-exists)
+- [🎯 Goals](#-goals)
+- [🚀 Quick Start](#-quick-start)
+- [📁 Project Structure](#-project-structure)
+- [📸 Screenshots](#-screenshots)
+- [🚧 Project Status](#-project-status)
+- [🛠️ Tech stack](#️-tech-stack)
+- [🧠 Philosophy](#-philosophy)
+- [📬 Contributing](#-contributing)
+
+---
+
 ## 🤖 Meet Savvy
 
 **Savvy** is your in-app guide.
@@ -28,6 +44,32 @@ Just the right info at the right time.
 - Helps you spot better buying opportunities  
 - Encourages smarter timing on everyday purchases  
 - Keeps the experience fast, light, and human  
+
+---
+
+## 🌱 Why Nimbly exists
+
+Groceries are getting expensive.  
+Everyday spending decisions are getting harder.  
+Most tools either shame you or overwhelm you.
+
+Nimbly exists to help everyday people:
+- spend smarter on essentials  
+- make better decisions without stress  
+- build healthier money habits over time  
+
+Small wins. Real relief.
+
+---
+
+## 🎯 Goals
+
+- Help people spend less on everyday groceries  
+- Reduce decision fatigue around shopping  
+- Build clarity instead of guilt  
+- Turn small savings into long-term stability over time  
+
+Small, repeatable wins. Long game.
 
 ---
 
@@ -98,30 +140,29 @@ nimbly/
 │   ├── utils.py            # Utility functions
 │   └── seed.py             # Database seeding
 │
-├── web/                    # Next.js web app
+├── web/                    # Next.js web app (Phase 1 ✅)
 │   ├── app/                # Pages and routes
-│   │   ├── page.tsx        # Home page
-│   │   ├── auth/           # Authentication
-│   │   ├── receipts/       # Receipts view
-│   │   ├── about/          # About page
-│   │   ├── savvy/          # Savvy page
-│   │   └── ...
+│   │   ├── auth/           # Authentication (sign up, sign in)
+│   │   ├── dashboard/      # Dashboard home
+│   │   ├── receipts/       # Receipt list, detail, upload
+│   │   ├── insights/       # Insights feed
+│   │   ├── deals/          # Deals page
+│   │   ├── profile/        # User profile
+│   │   └── not-found.tsx   # 404 page
 │   ├── components/         # React components
-│   │   ├── ui/             # Base UI components
-│   │   ├── navigation.tsx  # Navigation bar
-│   │   ├── footer.tsx      # Footer
+│   │   ├── ui/             # Base UI components (shadcn/ui)
+│   │   ├── navigation/     # Sidebar, bottom nav
+│   │   ├── app-layout.tsx  # Main layout
+│   │   ├── theme-provider.tsx
 │   │   └── ...
 │   └── lib/                # Utilities
 │       ├── api.ts          # API client
-│       ├── auth.ts         # Auth utilities
 │       └── utils.ts        # Helper functions
 │
-├── mobile/                 # React Native mobile app
-│   ├── src/
-│   │   ├── components/     # Mobile components
-│   │   ├── theme/          # Theme configuration
-│   │   └── context/        # React context
-│   └── App.tsx             # Main app component
+├── mobile/                 # React Native mobile app (Phase 1 🚧)
+│   ├── app/                # Expo Router pages
+│   ├── components/         # Mobile components
+│   └── lib/                # Utilities
 │
 ├── docs/                   # Documentation
 │   ├── requirements.md     # Feature requirements
@@ -149,59 +190,93 @@ nimbly/
 
 ---
 
-## 🌱 Why Nimbly exists
+## 📸 Screenshots
 
-Groceries are getting expensive.  
-Everyday spending decisions are getting harder.  
-Most tools either shame you or overwhelm you.
+<details>
+<summary><strong>🌐 Web App</strong></summary>
 
-Nimbly exists to help everyday people:
-- spend smarter on essentials  
-- make better decisions without stress  
-- build healthier money habits over time  
+### Landing Page
+![Web Landing](docs/images/web-landing.png)
 
-Small wins. Real relief.
+### Dashboard
+![Web Dashboard](docs/images/web-dashboard.png)
+
+### Receipts
+![Web Receipts](docs/images/web-receipts.png)
+
+### Insights
+![Web Insights](docs/images/web-insights.png)
+
+### Deals
+![Web Deals](docs/images/web-deals.png)
+
+### Profile
+![Web Profile](docs/images/web-profile.png)
+
+</details>
+
+<details>
+<summary><strong>📱 Mobile App</strong></summary>
+
+### Dashboard
+![Mobile Dashboard](docs/images/mobile-dashboard.png)
+
+### Receipts
+![Mobile Receipts](docs/images/mobile-receipts.png)
+
+### Insights
+![Mobile Insights](docs/images/mobile-insights.png)
+
+### Deals
+![Mobile Deals](docs/images/mobile-deals.png)
+
+### Upload
+![Mobile Upload](docs/images/mobile-upload.png)
+
+### Profile
+![Mobile Profile](docs/images/mobile-profile.png)
+
+</details>
 
 ---
 
-## 🎯 Goals
+## 🚧 Project Status
 
-- Help people spend less on everyday groceries  
-- Reduce decision fatigue around shopping  
-- Build clarity instead of guilt  
-- Turn small savings into long-term stability over time  
-
-Small, repeatable wins. Long game.
-
----
-
-## 🚧 Project status
-
-**Phase 0 (Backend Foundation):** Complete ✅
+**Phase 0 (Backend Foundation):** ✅ Complete
 - Magic link authentication
 - Receipt upload and parsing (OCR)
 - Price history tracking
-- Insight generation
+- Insight generation (4 types)
 - Comprehensive error handling
 - Structured logging
 - Docker deployment
 - Test suite
 
-**Phase 1 (UI Foundation):** Complete ✅
-- Next.js web app with professional pages
-- React Native mobile app
-- Design system (Sage/Amber colors, light/dark mode)
-- Framer Motion animations
-- Netlify deployment ready
+**Phase 1 (Web App):** ✅ Complete
+- Email/password + social authentication
+- Receipt upload (drag-and-drop + file picker)
+- Receipt list and detail views
+- Insights feed with 4 insight types
+- Professional UI with Sage/Amber colors
+- Light/dark mode with theme toggle
+- Collapsible sidebar with state persistence
+- Responsive design (desktop + mobile web)
+- Loading, empty, and error states
 
-**Phase 2 (Understanding):** In Progress 🚧
-- ✅ Enhanced OCR preprocessing (OpenCV)
-- ✅ Improved store detection (fuzzy matching)
-- ✅ Smarter line item extraction (quantities, unit prices)
-- ✅ Granular confidence scoring
-- 🔄 New insight types (coming soon)
+**Phase 1 (Mobile App):** 🚧 Next Priority
+- React Native with Expo
+- Camera integration for receipts
+- Same features as web app
+- Timeline: 2-3 weeks
 
-See `docs/` for complete requirements, design, and implementation plan.
+**Phase 2 (Infrastructure & Understanding):** 📋 Planned
+- Async processing (Celery + Redis)
+- Scalable storage (MinIO/S3)
+- LLM integration (Gemini 2 Flash)
+- Advanced insights (5 new types)
+- Performance optimization
+
+See `docs/roadmap.md` for complete development plan.
 
 ---
 

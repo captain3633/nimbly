@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr-eng \
     libpq-dev \
     gcc \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -18,6 +18,7 @@ WORKDIR /app
 
 # Copy application code
 COPY api/ ./api/
+COPY scripts/ ./scripts/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r api/requirements.txt

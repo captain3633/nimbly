@@ -37,8 +37,8 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-2xl bg-sage/10 flex items-center justify-center">
-              <span className="text-2xl">🐇</span>
+            <div className="w-10 h-10 rounded-2xl bg-sage/10 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Nimbly" className="w-7 h-7 object-contain" />
             </div>
             <span className="text-xl font-semibold text-text-primary">
               Nimbly

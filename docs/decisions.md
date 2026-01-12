@@ -315,3 +315,41 @@ Decisions we're explicitly deferring:
 7. **Integrations:** Which third-party services might we integrate with?
 
 These questions don't need answers for v0, but should be considered before v1.
+
+
+---
+
+## 13. LLM Provider Selection: Gemini 2.0 Flash
+
+**Decision:** Use Gemini 2.0 Flash exclusively for receipt parsing instead of mixing multiple LLM providers.
+
+**Rationale:**
+- **Simplicity:** Single API integration vs managing GPT-4 + Claude fallback chain
+- **Cost-effective:** ~$1.70/month for 1,000 receipts (vs $0.75 for mixed approach, but worth the simplicity)
+- **Free tier:** Available in Google AI Studio for development and testing
+- **Math accuracy:** Better at calculations and structured output than GPT-4o-mini
+- **Quality:** Handles receipt edge cases (shadows, handwriting, faded text) better than pure OCR
+- **Speed:** Returns structured JSON (date, total, items, categories) in one step
+- **Intelligence:** Auto-categorizes expenses and fixes OCR typos
+
+**Pricing breakdown (January 2026):**
+- Input: $0.50 per 1M tokens (~560 tokens per receipt image = $0.0003/receipt)
+- Output: $3.00 per 1M tokens (~200 tokens per receipt = $0.0006/receipt)
+- Total: ~$0.0009 per receipt
+- Monthly estimate: 1,000 receipts = $0.90 + buffer = ~$1.70/month
+
+**Hybrid approach:**
+- OpenCV + Tesseract first (free, fast, handles 70% of clean receipts)
+- Gemini 2.0 Flash fallback for failures or low confidence
+- Reduces API costs while maintaining high accuracy
+
+**Tradeoff:**
+- Slightly higher cost than mixed provider approach ($1.70 vs $0.75)
+- Single vendor dependency vs multi-provider resilience
+- We accept this because simplicity and developer experience matter more at this stage
+
+**Assumption:**
+Google will maintain competitive pricing and API reliability for Gemini 2.0 Flash.
+
+**Review trigger:**
+If monthly costs exceed $5/1000 receipts or if accuracy drops below 90%, revisit provider strategy.

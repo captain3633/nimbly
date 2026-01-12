@@ -1,7 +1,7 @@
 """
 Authentication endpoints and logic
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -10,8 +10,12 @@ import uuid
 
 from api.database import get_db
 from api.models import User
-from api.schemas import MagicLinkRequest, MagicLinkResponse, TokenVerifyResponse, ErrorResponse
+from api.schemas import (
+    SignUpRequest, SignInRequest, AuthResponse,
+    MagicLinkRequest, MagicLinkResponse, TokenVerifyResponse, ErrorResponse
+)
 from api.config import settings
+from api.utils import hash_password, verify_password, validate_password_strength
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -40,6 +44,141 @@ def create_session_token(user_id: str, email: str) -> str:
     token = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     logger.debug(f"Created session token for user {user_id}, expires at {expire}")
     return token
+
+@router.post("/signup", response_model=AuthResponse)
+async def signup(
+    request: SignUpRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Sign up with email and password.
+    
+    Creates a new user account with email/password authentication.
+    Password must meet security requirements:
+    - At least 8 characters
+    - At least one uppercase letter
+    - At least one lowercase letter
+    - At least one number
+    
+    **Request Body:**
+    - email: Valid email address
+    - password: Strong password meeting requirements
+    
+    **Response:**
+    - user_id: UUID of the created user
+    - email: User's email address
+    - session_token: JWT token for API authentication (valid for 30 days)
+    - auth_provider: Authentication method used (email)
+    
+    **Errors:**
+    - 400: Invalid password or user already exists
+    """
+    request_id = str(uuid.uuid4())[:8]
+    logger.info(f"[{request_id}] Signup requested for {request.email}")
+    
+    # Validate password strength
+    is_valid, message = validate_password_strength(request.password)
+    if not is_valid:
+        logger.warning(f"[{request_id}] Weak password for {request.email}: {message}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=message
+        )
+    
+    # Check if user already exists
+    existing_user = db.query(User).filter(User.email == request.email).first()
+    if existing_user:
+        logger.warning(f"[{request_id}] User already exists: {request.email}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists"
+        )
+    
+    # Create new user
+    password_hash = hash_password(request.password)
+    user = User(
+        email=request.email,
+        password_hash=password_hash,
+        auth_provider="email"
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    logger.info(f"[{request_id}] User created: {request.email} (user_id={user.id})")
+    
+    # Create session token
+    session_token = create_session_token(user.id, user.email)
+    
+    return AuthResponse(
+        user_id=user.id,
+        email=user.email,
+        session_token=session_token,
+        auth_provider="email"
+    )
+
+@router.post("/signin", response_model=AuthResponse)
+async def signin(
+    request: SignInRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Sign in with email and password.
+    
+    Authenticates an existing user with their email and password.
+    
+    **Request Body:**
+    - email: User's email address
+    - password: User's password
+    
+    **Response:**
+    - user_id: UUID of the user
+    - email: User's email address
+    - session_token: JWT token for API authentication (valid for 30 days)
+    - auth_provider: Authentication method used
+    
+    **Errors:**
+    - 401: Invalid email or password
+    """
+    request_id = str(uuid.uuid4())[:8]
+    logger.info(f"[{request_id}] Signin requested for {request.email}")
+    
+    # Find user
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user:
+        logger.warning(f"[{request_id}] User not found: {request.email}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+    
+    # Check if user has password (might be social auth only)
+    if not user.password_hash:
+        logger.warning(f"[{request_id}] User has no password: {request.email}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This account uses social login. Please sign in with your social provider."
+        )
+    
+    # Verify password
+    if not verify_password(request.password, user.password_hash):
+        logger.warning(f"[{request_id}] Invalid password for {request.email}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+    
+    logger.info(f"[{request_id}] User authenticated: {request.email} (user_id={user.id})")
+    
+    # Create session token
+    session_token = create_session_token(user.id, user.email)
+    
+    return AuthResponse(
+        user_id=user.id,
+        email=user.email,
+        session_token=session_token,
+        auth_provider=user.auth_provider
+    )
 
 def verify_token(token: str, expected_type: str) -> dict:
     """Verify and decode a JWT token"""
@@ -169,7 +308,10 @@ async def verify_magic_link(
     # Find or create user
     user = db.query(User).filter(User.email == email).first()
     if not user:
-        user = User(email=email)
+        user = User(
+            email=email,
+            auth_provider="magic_link"
+        )
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -212,4 +354,27 @@ def get_current_user(
         )
     
     return user
+
+def get_current_user_from_header(
+    authorization: str = Header(None),
+    db: Session = Depends(get_db)
+) -> User:
+    """
+    FastAPI dependency to extract and validate user from Authorization header.
+    """
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
+    
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization header format"
+        )
+    
+    token = authorization.replace("Bearer ", "")
+    return get_current_user(token, db)
+
 

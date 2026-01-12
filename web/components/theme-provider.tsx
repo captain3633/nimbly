@@ -22,21 +22,18 @@ export function ThemeProvider({
   children,
   defaultTheme = "light",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = React.useState<Theme>(defaultTheme);
-
-  React.useEffect(() => {
-    // Check localStorage on mount
-    const stored = localStorage.getItem("nimbly-theme") as Theme | null;
-    if (stored) {
-      setTheme(stored);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
+  const [theme, setTheme] = React.useState<Theme>(() => {
+    // Initialize from localStorage or system preference on first render
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("nimbly-theme") as Theme | null;
+      if (stored) {
+        return stored;
+      }
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return prefersDark ? "dark" : "light";
     }
-  }, []);
+    return defaultTheme;
+  });
 
   React.useEffect(() => {
     // Apply theme to document

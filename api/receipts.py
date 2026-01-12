@@ -20,7 +20,7 @@ from api.schemas import (
     ErrorResponse
 )
 from api.config import settings
-from api.auth import get_current_user
+from api.auth import get_current_user_from_header
 from api.parser import parse_receipt
 
 router = APIRouter()
@@ -57,7 +57,7 @@ def save_receipt_file(user_id: uuid.UUID, file: UploadFile) -> str:
 @router.post("/upload", response_model=ReceiptUploadResponse)
 async def upload_receipt(
     file: UploadFile = File(...),
-    authorization: str = Header(None),
+    user: User = Depends(get_current_user_from_header),
     db: Session = Depends(get_db)
 ):
     """
@@ -78,25 +78,6 @@ async def upload_receipt(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
-    
-    # Check if authorization header is present
-    if not authorization:
-        logger.warning(f"[{request_id}] Missing authorization header")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authorization header"
-        )
-    
-    # Extract token from Authorization header
-    if not authorization.startswith("Bearer "):
-        logger.warning(f"[{request_id}] Invalid authorization header format")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    user = get_current_user(token, db)
     
     logger.info(f"[{request_id}] Receipt upload started: user={user.id}, filename={file.filename}")
     
@@ -147,7 +128,7 @@ async def upload_receipt(
 
 @router.get("", response_model=ReceiptListResponse)
 async def list_receipts(
-    authorization: str = Header(None),
+    user: User = Depends(get_current_user_from_header),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -167,23 +148,6 @@ async def list_receipts(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
-    
-    # Check if authorization header is present
-    if not authorization:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authorization header"
-        )
-    
-    # Extract token and get user
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    user = get_current_user(token, db)
     
     logger.info(f"[{request_id}] Listing receipts: user={user.id}, limit={limit}, offset={offset}")
     
@@ -217,7 +181,7 @@ async def list_receipts(
 @router.get("/{receipt_id}", response_model=ReceiptDetailResponse)
 async def get_receipt_detail(
     receipt_id: uuid.UUID,
-    authorization: str = Header(None),
+    user: User = Depends(get_current_user_from_header),
     db: Session = Depends(get_db)
 ):
     """
@@ -231,23 +195,6 @@ async def get_receipt_detail(
     ```
     """
     request_id = str(uuid.uuid4())[:8]
-    
-    # Check if authorization header is present
-    if not authorization:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authorization header"
-        )
-    
-    # Extract token and get user
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authorization header"
-        )
-    
-    token = authorization.replace("Bearer ", "")
-    user = get_current_user(token, db)
     
     logger.info(f"[{request_id}] Fetching receipt detail: user={user.id}, receipt={receipt_id}")
     

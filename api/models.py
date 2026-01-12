@@ -22,6 +22,9 @@ class User(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=True)  # For email/password auth
+    auth_provider = Column(String, default="email", nullable=False)  # email, google, apple, meta, magic_link
+    provider_user_id = Column(String, nullable=True)  # For social auth
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
